@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.itcast.crm.mapper.CustMapper">
+	<resultMap type="Cust" id="cust_s">
+		<id property="cid" column="cid"/>
+		<result property="cust_name" column="cust_name" />
+		<result property="cust_type" column="cust_type" />
+		<result property="cust_phone" column="cust_phone" />
+		<result property="cust_address" column="cust_address" />
+		<association property="user" javaType="cn.itcast.crm.pojo.User">
+			<result property="uid" column="uid"/>
+			<result property="username" column="username"/>
+			<result property="nickname" column="nickname"/>
+			<result property="password" column="password"/>
+			<result property="phoneCheckCode" column="phoneCheckCode"/>
+			<result property="checkCode" column="checkCode"/>
+		</association>
+	</resultMap>
+	
+	<select id="findall" resultMap="cust_s" parameterType="cn.itcast.crm.pojo.QueryVo">
+		<!-- SELECT 	* FROM 	`ssh`.`s_cust`  -->
+		SELECT * FROM `s_cust` s , `s_user` u WHERE s.cust_link_user=u.uid 
+			<if test="cust_username !=null and cust_username != ''">
+				AND s.cust_name like '%${cust_username}%'
+			</if>
+			<if test="cust_type !=null and cust_type !=''">
+				AND s.cust_type like '%${cust_type}%'
+			</if>
+	</select>
+	
+	<delete id="delete" parameterType="Long">
+		DELETE FROM s_cust WHERE cid=#{id}
+	</delete>
+	
+	<insert id="add" parameterType="cn.itcast.crm.pojo.Cust">
+		INSERT INTO s_cust(
+		`cust_name`, 
+		`cust_type`, 
+		`cust_phone`, 
+		`cust_address`, 
+		`cust_link_user`
+		) VALUES(
+		#{cust_name},
+		#{cust_type},
+		#{cust_phone},
+		#{cust_address},
+		#{user.uid}
+		)
+	</insert>
+	
+	
+</mapper>
